@@ -21,13 +21,15 @@ RUN apt-get update && \
 # Create virtual environment
 RUN python3 -m venv $VIRTUAL_ENV
 
+# Upgrade pip inside the virtual environment
+RUN $VIRTUAL_ENV/bin/pip install --upgrade pip
+
 # Copy project files
 COPY requirements.txt /app/
 COPY devops /app/devops
 
-# Upgrade pip and install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+# Install Python dependencies inside the virtual environment
+RUN $VIRTUAL_ENV/bin/pip install --no-cache-dir -r requirements.txt
 
 # Set final working directory
 WORKDIR /app/devops
@@ -36,5 +38,5 @@ WORKDIR /app/devops
 EXPOSE 8000
 
 # Set entrypoint and command
-ENTRYPOINT ["/opt/venv/bin/python3"]
-CMD ["manage.py", "runserver", "0.0.0.0:8000"]
+ENTRYPOINT ["python3", "manage.py"]
+CMD ["runserver", "0.0.0.0:8000"]
