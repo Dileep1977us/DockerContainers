@@ -10,26 +10,25 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
+# Install system dependencies (no pip installation here)
 RUN apt-get update && \
     apt-get install -y \
     python3 \
-    python3-pip \
     python3-venv \
     && rm -rf /var/lib/apt/lists/*
 
 # Create virtual environment
 RUN python3 -m venv $VIRTUAL_ENV
 
-# Upgrade pip inside the virtual environment
-RUN $VIRTUAL_ENV/bin/pip install --upgrade pip
+# Upgrade pip inside the virtual environment (use venv pip)
+RUN $VIRTUAL_ENV/bin/python -m pip install --upgrade pip
 
 # Copy project files
 COPY requirements.txt /app/
 COPY devops /app/devops
 
 # Install Python dependencies inside the virtual environment
-RUN $VIRTUAL_ENV/bin/pip install --no-cache-dir -r requirements.txt
+RUN $VIRTUAL_ENV/bin/python -m pip install --no-cache-dir -r requirements.txt
 
 # Set final working directory
 WORKDIR /app/devops
